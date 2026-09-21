@@ -1,0 +1,91 @@
+<h2 class="text-2xl font-bold text-blue-600 mb-4">Inventario de Vehículos</h2>
+
+<p *ngIf="error" class="text-red-600 mb-4">{{ error }}</p>
+
+<!-- Filtros -->
+<div class="bg-gray-100 p-4 rounded shadow mb-6 flex flex-wrap gap-3 items-end">
+  <div>
+    <label class="block text-sm font-medium">Marca</label>
+    <input [(ngModel)]="filtroMarca" class="border p-2 rounded" placeholder="ej. Toyota">
+  </div>
+  <div>
+    <label class="block text-sm font-medium">Modelo</label>
+    <input [(ngModel)]="filtroModelo" class="border p-2 rounded" placeholder="ej. Corolla">
+  </div>
+  <div>
+    <label class="block text-sm font-medium">Precio mín.</label>
+    <input [(ngModel)]="filtroPrecioMin" type="number" class="border p-2 rounded w-28">
+  </div>
+  <div>
+    <label class="block text-sm font-medium">Precio máx.</label>
+    <input [(ngModel)]="filtroPrecioMax" type="number" class="border p-2 rounded w-28">
+  </div>
+  <label class="flex items-center gap-2">
+    <input [(ngModel)]="filtroSoloDisponibles" type="checkbox">
+    Solo disponibles
+  </label>
+  <button (click)="cargarVehiculos()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Filtrar
+  </button>
+  <button (click)="limpiarFiltros()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+    Limpiar
+  </button>
+</div>
+
+<!-- Alta de vehículo -->
+<form (ngSubmit)="agregarVehiculo()" class="space-y-3 bg-gray-100 p-4 rounded shadow mb-6">
+  <h3 class="font-semibold">Agregar vehículo</h3>
+  <input [(ngModel)]="nuevoVehiculo.marca" name="marca" placeholder="Marca" class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoVehiculo.modelo" name="modelo" placeholder="Modelo" class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoVehiculo.anio" name="anio" type="number" placeholder="Año" class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoVehiculo.precio" name="precio" type="number" step="0.01" placeholder="Precio" class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoVehiculo.imagen_url" name="imagen_url" placeholder="URL de imagen (opcional)" class="border p-2 w-full rounded">
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Agregar Vehículo
+  </button>
+</form>
+
+<p *ngIf="cargando" class="text-gray-500">Cargando vehículos...</p>
+
+<table *ngIf="!cargando" class="table-auto w-full border-collapse border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="border px-4 py-2">Marca</th>
+      <th class="border px-4 py-2">Modelo</th>
+      <th class="border px-4 py-2">Año</th>
+      <th class="border px-4 py-2">Precio</th>
+      <th class="border px-4 py-2">Disponible</th>
+      <th class="border px-4 py-2">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of vehiculos" class="hover:bg-gray-100">
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="v.marca" name="marca{{v.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="v.modelo" name="modelo{{v.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="v.anio" name="anio{{v.id}}" type="number" class="border p-1 rounded w-20">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="v.precio" name="precio{{v.id}}" class="border p-1 rounded w-24">
+      </td>
+      <td class="border px-4 py-2 text-center">
+        <input [(ngModel)]="v.disponible" name="disponible{{v.id}}" type="checkbox">
+      </td>
+      <td class="border px-4 py-2 space-x-2">
+        <button (click)="actualizarVehiculo(v)" class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">
+          Actualizar
+        </button>
+        <button (click)="eliminarVehiculo(v.id)" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
+          Eliminar
+        </button>
+      </td>
+    </tr>
+    <tr *ngIf="vehiculos.length === 0">
+      <td colspan="6" class="border px-4 py-2 text-center text-gray-500">No se encontraron vehículos con esos filtros.</td>
+    </tr>
+  </tbody>
+</table>

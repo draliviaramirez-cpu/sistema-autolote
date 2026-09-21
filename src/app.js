@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const ventaRoutes = require('./routes/venta.routes');
+const tasasRoutes = require('./routes/tasas.routes');
 
 const healthRoutes = require('./routes/health.routes');
 // A medida que se implementen los módulos, se agregan aquí, ej:
@@ -11,6 +13,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/ventas', ventaRoutes);
+app.use('/api/tasas-cambio', tasasRoutes);
 
 // Ruta raíz
 app.get('/', (req, res) => {

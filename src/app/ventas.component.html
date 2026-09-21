@@ -1,0 +1,53 @@
+<h2 class="text-2xl font-bold text-blue-600 mb-4">Listado de Ventas</h2>
+
+<div class="flex items-center gap-3 mb-4">
+  <label class="font-medium">Convertir precios a:</label>
+  <select [(ngModel)]="monedaSeleccionada" class="border p-2 rounded">
+    <option *ngFor="let m of monedasDisponibles" [value]="m">{{ m }}</option>
+  </select>
+</div>
+
+<p *ngIf="cargando" class="text-gray-500">Cargando ventas...</p>
+<p *ngIf="error" class="text-red-600">{{ error }}</p>
+
+<table *ngIf="!cargando && !error" class="table-auto w-full border-collapse border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="border px-4 py-2">Fecha</th>
+      <th class="border px-4 py-2">Vehículo</th>
+      <th class="border px-4 py-2">Cliente</th>
+      <th class="border px-4 py-2">Vendedor</th>
+      <th class="border px-4 py-2">Precio total</th>
+      <th class="border px-4 py-2">Impuestos</th>
+      <th class="border px-4 py-2">Convertido</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let venta of ventas" class="hover:bg-gray-100">
+      <td class="border px-4 py-2">{{ venta.fecha_venta | date: 'dd/MM/yyyy' }}</td>
+      <td class="border px-4 py-2">{{ venta.marca }} {{ venta.modelo }} ({{ venta.anio }})</td>
+      <td class="border px-4 py-2">{{ venta.cliente_nombre }} {{ venta.cliente_apellido }}</td>
+      <td class="border px-4 py-2">{{ venta.vendedor_nombre }}</td>
+      <td class="border px-4 py-2">${{ venta.precio_total }}</td>
+      <td class="border px-4 py-2">${{ venta.impuestos }}</td>
+      <td class="border px-4 py-2">
+        <button (click)="convertirPrecio(venta)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm">
+          Ver en {{ monedaSeleccionada }}
+        </button>
+        <span *ngIf="conversiones[venta.id] as c" class="ml-2 font-medium">
+          {{ c.monto | number: '1.2-2' }} {{ c.moneda }}
+        </span>
+      </td>
+    </tr>
+    <tr *ngIf="ventas.length === 0">
+      <td colspan="7" class="border px-4 py-2 text-center text-gray-500">No hay ventas registradas todavía.</td>
+    </tr>
+  </tbody>
+  <tfoot *ngIf="ventas.length > 0">
+    <tr class="bg-gray-100 font-semibold">
+      <td colspan="4" class="border px-4 py-2 text-right">Total:</td>
+      <td class="border px-4 py-2">${{ totalVentas | number: '1.2-2' }}</td>
+      <td class="border px-4 py-2" colspan="2"></td>
+    </tr>
+  </tfoot>
+</table>
