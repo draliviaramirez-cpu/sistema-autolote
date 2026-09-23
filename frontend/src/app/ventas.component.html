@@ -1,5 +1,68 @@
 <h2 class="text-2xl font-bold text-blue-600 mb-4">Listado de Ventas</h2>
 
+<form (ngSubmit)="agregarVenta()" class="mb-8 overflow-hidden rounded-lg border border-gray-300 bg-white shadow">
+  <div class="border-b border-gray-200 bg-gray-800 px-6 py-5 text-white">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-300">Documento de venta</p>
+    <h3 class="mt-1 text-2xl font-bold">Registrar nueva venta</h3>
+    <p class="mt-1 text-sm text-gray-300">Completa los datos de la operación y revisa el total antes de confirmar.</p>
+  </div>
+
+  <div class="space-y-6 p-6">
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Datos de la operación</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="block">Fecha de venta
+          <input [(ngModel)]="nuevaVenta.fecha_venta" name="fecha_venta" type="date" class="mt-1 border p-2 rounded w-full" required>
+        </label>
+        <label class="block">ID del cliente comprador
+          <span class="block text-sm text-gray-600">Usa el ID mostrado en Clientes.</span>
+          <input [(ngModel)]="nuevaVenta.cliente_id" (ngModelChange)="actualizarClienteSeleccionado()" name="cliente_id" type="number" min="1" class="mt-1 border p-2 rounded w-full" required>
+          @if (clienteSeleccionado; as cliente) {
+            <span class="mt-1 block text-sm text-green-700">{{ cliente.nombre }} {{ cliente.apellido }} - {{ cliente.correo }}</span>
+          } @else if (nuevaVenta.cliente_id) {
+            <span class="mt-1 block text-sm text-red-600">No se encontró un cliente con ese ID.</span>
+          }
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Detalle del vehículo</h4>
+      <label class="block">ID del vehículo vendido
+        <span class="block text-sm text-gray-600">Usa el ID mostrado en Vehículos. Debe estar disponible.</span>
+        <input [(ngModel)]="nuevaVenta.vehiculo_id" (ngModelChange)="seleccionarVehiculo()" name="vehiculo_id" type="number" min="1" class="mt-1 border p-2 rounded w-full" required>
+        @if (vehiculoSeleccionado; as vehiculo) {
+          <span class="mt-1 block text-sm text-green-700">{{ vehiculo.marca }} {{ vehiculo.modelo }} ({{ vehiculo.anio }}) - ${{ vehiculo.precio }}</span>
+        }
+      </label>
+    </section>
+
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Resumen de pago</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="block">Precio de venta
+          <input [(ngModel)]="nuevaVenta.precio_total" (ngModelChange)="calcularImpuestos()" name="precio_total" type="number" min="0.01" step="0.01" class="mt-1 border p-2 rounded w-full" required>
+          <span class="block text-sm text-gray-600">Se completa con el precio del vehículo.</span>
+        </label>
+        <label class="block">Porcentaje de impuesto
+          <input [(ngModel)]="nuevaVenta.impuesto_porcentaje" (ngModelChange)="calcularImpuestos()" name="impuesto_porcentaje" type="number" min="0" step="0.01" class="mt-1 border p-2 rounded w-full" required>
+          <span class="block text-sm text-gray-600">Ejemplo: 15 significa 15%.</span>
+        </label>
+        <label class="block">Impuesto calculado
+          <input [ngModel]="nuevaVenta.impuestos" name="impuestos" type="number" readonly class="mt-1 border p-2 rounded w-full bg-gray-100">
+        </label>
+        <label class="block font-semibold text-gray-800">Total a pagar
+          <input [value]="totalPagar | number: '1.2-2'" type="text" readonly class="mt-1 border p-2 rounded w-full bg-green-100 text-green-800">
+        </label>
+      </div>
+    </section>
+
+    <button type="submit" class="w-full rounded bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-800">Registrar venta</button>
+  </div>
+</form>
+
+<p *ngIf="mensaje" class="text-green-600 mb-3">{{ mensaje }}</p>
+
 <div class="flex items-center gap-3 mb-4">
   <label class="font-medium">Convertir precios a:</label>
   <select [(ngModel)]="monedaSeleccionada" class="border p-2 rounded">
@@ -20,16 +83,23 @@
       <th class="border px-4 py-2">Precio total</th>
       <th class="border px-4 py-2">Impuestos</th>
       <th class="border px-4 py-2">Convertido</th>
+      <th class="border px-4 py-2">Acciones</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let venta of ventas" class="hover:bg-gray-100">
-      <td class="border px-4 py-2">{{ venta.fecha_venta | date: 'dd/MM/yyyy' }}</td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.fecha_venta" name="fecha{{venta.id}}" type="date" class="border p-1 rounded">
+      </td>
       <td class="border px-4 py-2">{{ venta.marca }} {{ venta.modelo }} ({{ venta.anio }})</td>
       <td class="border px-4 py-2">{{ venta.cliente_nombre }} {{ venta.cliente_apellido }}</td>
       <td class="border px-4 py-2">{{ venta.vendedor_nombre }}</td>
-      <td class="border px-4 py-2">${{ venta.precio_total }}</td>
-      <td class="border px-4 py-2">${{ venta.impuestos }}</td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.precio_total" name="total{{venta.id}}" type="number" step="0.01" class="border p-1 rounded w-28">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.impuestos" name="impuestos{{venta.id}}" type="number" step="0.01" class="border p-1 rounded w-24">
+      </td>
       <td class="border px-4 py-2">
         <button (click)="convertirPrecio(venta)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm">
           Ver en {{ monedaSeleccionada }}
@@ -38,16 +108,20 @@
           {{ c.monto | number: '1.2-2' }} {{ c.moneda }}
         </span>
       </td>
+      <td class="border px-4 py-2 space-x-2">
+        <button type="button" (click)="actualizarVenta(venta)" class="bg-green-600 text-white px-2 py-1 rounded">Actualizar</button>
+        <button type="button" (click)="eliminarVenta(venta.id)" class="bg-red-600 text-white px-2 py-1 rounded">Eliminar</button>
+      </td>
     </tr>
     <tr *ngIf="ventas.length === 0">
-      <td colspan="7" class="border px-4 py-2 text-center text-gray-500">No hay ventas registradas todavía.</td>
+      <td colspan="8" class="border px-4 py-2 text-center text-gray-500">No hay ventas registradas todavía.</td>
     </tr>
   </tbody>
   <tfoot *ngIf="ventas.length > 0">
     <tr class="bg-gray-100 font-semibold">
       <td colspan="4" class="border px-4 py-2 text-right">Total:</td>
       <td class="border px-4 py-2">${{ totalVentas | number: '1.2-2' }}</td>
-      <td class="border px-4 py-2" colspan="2"></td>
+      <td class="border px-4 py-2" colspan="3"></td>
     </tr>
   </tfoot>
 </table>

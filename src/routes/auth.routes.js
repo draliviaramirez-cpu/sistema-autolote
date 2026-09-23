@@ -8,7 +8,7 @@ require('dotenv').config();
 // POST /api/auth/register
 // Registra un nuevo usuario (personal del autolote: admin o vendedor)
 router.post('/register', async (req, res) => {
-  const { nombre, email, password, rol } = req.body;
+  const { nombre, email, password } = req.body;
 
   if (!nombre || !email || !password) {
     return res.status(400).json({ error: 'nombre, email y password son obligatorios' });
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
 
     const [result] = await pool.query(
       'INSERT INTO usuario (nombre, email, password_hash, rol) VALUES (?, ?, ?, ?)',
-      [nombre, email, passwordHash, rol || 'vendedor']
+      [nombre, email, passwordHash, 'vendedor']
     );
 
     res.status(201).json({ message: 'Usuario registrado', id: result.insertId });
