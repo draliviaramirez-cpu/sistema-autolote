@@ -1,0 +1,23 @@
+<nav class="flex flex-wrap items-center gap-3 bg-gray-800 p-4 text-white">
+	<strong class="mr-4">Sistema Autolote</strong>
+	<a routerLink="/clientes" routerLinkActive="bg-blue-600" class="rounded px-3 py-2 hover:bg-gray-700">
+		Clientes
+	</a>
+	<a routerLink="/vehiculos" routerLinkActive="bg-blue-600" class="rounded px-3 py-2 hover:bg-gray-700">
+		Vehículos
+	</a>
+	<a routerLink="/ventas" routerLinkActive="bg-blue-600" class="rounded px-3 py-2 hover:bg-gray-700">
+		Ventas
+	</a>
+	<a routerLink="/consultas" routerLinkActive="bg-blue-600" class="rounded px-3 py-2 hover:bg-gray-700">
+		Consultas
+	</a>
+	<a routerLink="/usuarios" routerLinkActive="bg-blue-600" class="rounded px-3 py-2 hover:bg-gray-700">
+		Usuarios
+	</a>
+	<button type="button" class="rounded bg-red-600 px-3 py-2 hover:bg-red-700" (click)="cerrarSesion()">
+		Cerrar sesión
+	</button>
+</nav>
+
+<router-outlet />

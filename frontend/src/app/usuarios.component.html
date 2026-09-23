@@ -1,0 +1,78 @@
+<h2 class="text-2xl font-bold text-blue-600 mb-4">Usuarios del sistema</h2>
+
+<form (ngSubmit)="agregarUsuario()" class="grid gap-4 rounded bg-gray-100 p-4 shadow md:grid-cols-2">
+  <label class="block">Nombre
+    <input [(ngModel)]="nuevoUsuario.nombre" name="nombre" placeholder="Ej. Livia Ramírez" class="mt-1 w-full rounded border p-2" required>
+  </label>
+  <label class="block">Correo (con este inicia sesión)
+    <input [(ngModel)]="nuevoUsuario.email" name="email" type="email" placeholder="correo@ejemplo.com" class="mt-1 w-full rounded border p-2" required>
+  </label>
+  <label class="block">Contraseña
+    <input [(ngModel)]="nuevoUsuario.password" name="password" type="password" placeholder="Mínimo 4 caracteres" autocomplete="new-password" class="mt-1 w-full rounded border p-2" required>
+  </label>
+  <label class="block">Rol
+    <select [(ngModel)]="nuevoUsuario.rol" name="rol" class="mt-1 w-full rounded border p-2">
+      <option value="vendedor">Vendedor</option>
+      <option value="admin">Administrador</option>
+    </select>
+  </label>
+  <div class="md:col-span-2">
+    <button type="submit" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Crear usuario</button>
+  </div>
+</form>
+
+@if (mensaje) {
+  <p role="status" class="mt-4 text-green-700">{{ mensaje }}</p>
+}
+@if (error) {
+  <p role="alert" class="mt-4 text-red-600">{{ error }}</p>
+}
+
+@if (cargando) {
+  <p class="mt-4 text-gray-500">Cargando usuarios...</p>
+} @else {
+  <table class="mt-6 w-full table-auto border-collapse border border-gray-300">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="border px-4 py-2">ID</th>
+        <th class="border px-4 py-2">Nombre</th>
+        <th class="border px-4 py-2">Correo</th>
+        <th class="border px-4 py-2">Rol</th>
+        <th class="border px-4 py-2">Nueva contraseña</th>
+        <th class="border px-4 py-2">Creado</th>
+        <th class="border px-4 py-2">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of usuarios; track u.id) {
+        <tr class="hover:bg-gray-100">
+          <td class="border px-4 py-2">{{ u.id }}</td>
+          <td class="border px-4 py-2">
+            <input [(ngModel)]="u.nombre" name="nombre{{u.id}}" class="w-full rounded border p-1">
+          </td>
+          <td class="border px-4 py-2">
+            <input [(ngModel)]="u.email" name="email{{u.id}}" class="w-full rounded border p-1">
+          </td>
+          <td class="border px-4 py-2">
+            <select [(ngModel)]="u.rol" name="rol{{u.id}}" class="rounded border p-1">
+              <option value="vendedor">Vendedor</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </td>
+          <td class="border px-4 py-2">
+            <input [(ngModel)]="nuevasPasswords[u.id]" name="pass{{u.id}}" type="password" placeholder="Dejar vacío = no cambiar" autocomplete="new-password" class="w-full rounded border p-1 text-sm">
+          </td>
+          <td class="border px-4 py-2 text-sm">{{ u.creado_en | date: 'dd/MM/yyyy' }}</td>
+          <td class="border px-4 py-2 space-x-2 whitespace-nowrap">
+            <button type="button" (click)="actualizarUsuario(u)" class="rounded bg-green-600 px-2 py-1 text-white hover:bg-green-700">Actualizar</button>
+            <button type="button" (click)="eliminarUsuario(u)" class="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700">Eliminar</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="border px-4 py-2 text-center text-gray-500">No hay usuarios registrados.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

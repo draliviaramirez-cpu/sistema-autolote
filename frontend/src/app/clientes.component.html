@@ -1,0 +1,68 @@
+<h2 class="text-2xl font-bold text-blue-600 mb-4">Gestión de Clientes</h2>
+
+<form (ngSubmit)="agregarCliente()" class="space-y-4 bg-gray-100 p-4 rounded shadow">
+  <input [(ngModel)]="nuevoCliente.nombre" name="nombre" placeholder="Nombre"
+         class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoCliente.apellido" name="apellido" placeholder="Apellido"
+         class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoCliente.correo" name="correo" placeholder="Correo"
+         class="border p-2 w-full rounded" required>
+  <input [(ngModel)]="nuevoCliente.telefono" name="telefono" placeholder="Teléfono"
+         class="border p-2 w-full rounded">
+  <input [(ngModel)]="nuevoCliente.direccion" name="direccion" placeholder="Dirección"
+         class="border p-2 w-full rounded">
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Agregar Cliente
+  </button>
+  @if (mensaje) {
+    <p role="status" class="mt-2">{{ mensaje }}</p>
+  }
+</form>
+
+@if (error) {
+  <p role="alert" class="mt-4 text-red-600">{{ error }}</p>
+} @else if (clientes.length === 0) {
+  <p class="mt-4 text-gray-600">No hay clientes registrados.</p>
+}
+
+<table class="table-auto w-full mt-6 border-collapse border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="border px-4 py-2">ID</th>
+      <th class="border px-4 py-2">Nombre</th>
+      <th class="border px-4 py-2">Apellido</th>
+      <th class="border px-4 py-2">Correo</th>
+      <th class="border px-4 py-2">Teléfono</th>
+      <th class="border px-4 py-2">Dirección</th>
+      <th class="border px-4 py-2">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cliente of clientes" class="hover:bg-gray-100">
+      <td class="border px-4 py-2">{{ cliente.id }}</td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="cliente.nombre" name="nombre{{cliente.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="cliente.apellido" name="apellido{{cliente.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="cliente.correo" name="correo{{cliente.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="cliente.telefono" name="telefono{{cliente.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="cliente.direccion" name="direccion{{cliente.id}}" class="border p-1 rounded w-full">
+      </td>
+      <td class="border px-4 py-2 space-x-2">
+        <button (click)="actualizarCliente(cliente)" class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">
+          Actualizar
+        </button>
+        <button (click)="eliminarCliente(cliente.id)" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
+          Eliminar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

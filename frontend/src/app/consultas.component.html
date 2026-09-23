@@ -1,0 +1,63 @@
+<h2 class="text-2xl font-bold text-blue-600 mb-4">Consultas y pruebas de manejo</h2>
+
+<form (ngSubmit)="agregarConsulta()" class="space-y-3 bg-gray-100 p-4 rounded shadow mb-6">
+  <h3 class="font-semibold">Registrar solicitud de un cliente</h3>
+  <p class="text-sm text-gray-600">Registra una solicitud de información o una prueba de manejo relacionada con un vehículo.</p>
+  <label class="block">ID del cliente
+    <span class="block text-sm text-gray-600">Es el número que aparece en la lista de Clientes.</span>
+    <input [(ngModel)]="nuevaConsulta.cliente_id" name="cliente_id" type="number" min="1" class="border p-2 w-full rounded" required>
+  </label>
+  <label class="block">ID del vehículo consultado
+    <span class="block text-sm text-gray-600">Es el número que aparece en la lista de Vehículos.</span>
+    <input [(ngModel)]="nuevaConsulta.vehiculo_id" name="vehiculo_id" type="number" min="1" class="border p-2 w-full rounded" required>
+  </label>
+  <label class="block">Tipo de solicitud
+    <select [(ngModel)]="nuevaConsulta.tipo" name="tipo" class="border p-2 w-full rounded">
+    <option value="" disabled>Selecciona el tipo de solicitud</option>
+    <option value="informacion">Solicitud de información</option>
+    <option value="prueba_manejo">Prueba de manejo</option>
+    </select>
+  </label>
+  <label class="block">Detalle de la solicitud
+    <span class="block text-sm text-gray-600">Escribe la pregunta del cliente o los detalles de la prueba de manejo.</span>
+    <textarea [(ngModel)]="nuevaConsulta.mensaje" name="mensaje" class="border p-2 w-full rounded"></textarea>
+  </label>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Registrar consulta</button>
+</form>
+
+<div class="flex items-end gap-3 mb-4">
+  <label class="flex-1">Buscar historial de un cliente por su ID
+    <input [(ngModel)]="clienteIdFiltro" type="number" min="1" class="border p-2 rounded w-full" placeholder="Todos los clientes">
+  </label>
+  <button type="button" (click)="cargarConsultas()" class="bg-gray-700 text-white px-4 py-2 rounded">Buscar</button>
+</div>
+
+<p *ngIf="mensaje" class="text-green-600">{{ mensaje }}</p>
+<p *ngIf="error" class="text-red-600">{{ error }}</p>
+<p *ngIf="cargando" class="text-gray-500">Cargando consultas...</p>
+<p *ngIf="!cargando && !error && consultas.length === 0" class="text-gray-600">No hay consultas registradas.</p>
+
+<table *ngIf="!cargando && !error" class="table-auto w-full border-collapse border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="border px-4 py-2">Fecha</th>
+      <th class="border px-4 py-2">Cliente</th>
+      <th class="border px-4 py-2">Vehículo</th>
+      <th class="border px-4 py-2">Tipo</th>
+      <th class="border px-4 py-2">Mensaje</th>
+      <th class="border px-4 py-2">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let consulta of consultas">
+      <td class="border px-4 py-2">{{ consulta.fecha | date: 'dd/MM/yyyy' }}</td>
+      <td class="border px-4 py-2">{{ consulta.cliente_nombre }} {{ consulta.cliente_apellido }}</td>
+      <td class="border px-4 py-2">{{ consulta.marca }} {{ consulta.modelo }}</td>
+      <td class="border px-4 py-2">{{ consulta.tipo }}</td>
+      <td class="border px-4 py-2">{{ consulta.mensaje || '-' }}</td>
+      <td class="border px-4 py-2">
+        <button type="button" (click)="eliminarConsulta(consulta.id)" class="bg-red-600 text-white px-2 py-1 rounded">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
