@@ -1,5 +1,12 @@
 <h2 class="text-2xl font-bold text-blue-600 mb-4">Inventario de Vehículos</h2>
 
+<div class="flex items-center gap-3 mb-4">
+  <label for="moneda-vehiculos" class="font-medium">Mostrar precios en:</label>
+  <select id="moneda-vehiculos" [(ngModel)]="monedaSeleccionada" class="border p-2 rounded">
+    <option *ngFor="let moneda of monedasDisponibles" [value]="moneda">{{ moneda }}</option>
+  </select>
+</div>
+
 <p *ngIf="error" class="text-red-600 mb-4">{{ error }}</p>
 
 <!-- Filtros -->
@@ -50,16 +57,19 @@
 <table *ngIf="!cargando" class="table-auto w-full border-collapse border border-gray-300">
   <thead class="bg-gray-200">
     <tr>
+      <th class="border px-4 py-2">ID</th>
       <th class="border px-4 py-2">Marca</th>
       <th class="border px-4 py-2">Modelo</th>
       <th class="border px-4 py-2">Año</th>
       <th class="border px-4 py-2">Precio</th>
+      <th class="border px-4 py-2">Conversión</th>
       <th class="border px-4 py-2">Disponible</th>
       <th class="border px-4 py-2">Acciones</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let v of vehiculos" class="hover:bg-gray-100">
+      <td class="border px-4 py-2">{{ v.id }}</td>
       <td class="border px-4 py-2">
         <input [(ngModel)]="v.marca" name="marca{{v.id}}" class="border p-1 rounded w-full">
       </td>
@@ -71,6 +81,12 @@
       </td>
       <td class="border px-4 py-2">
         <input [(ngModel)]="v.precio" name="precio{{v.id}}" class="border p-1 rounded w-24">
+      </td>
+      <td class="border px-4 py-2">
+        <button type="button" (click)="convertirPrecio(v)" class="bg-blue-600 text-white px-2 py-1 rounded">Convertir</button>
+        <span *ngIf="conversiones[v.id] !== undefined" class="block mt-1">
+          {{ conversiones[v.id] | number: '1.2-2' }} {{ monedaSeleccionada }}
+        </span>
       </td>
       <td class="border px-4 py-2 text-center">
         <input [(ngModel)]="v.disponible" name="disponible{{v.id}}" type="checkbox">
@@ -85,7 +101,7 @@
       </td>
     </tr>
     <tr *ngIf="vehiculos.length === 0">
-      <td colspan="6" class="border px-4 py-2 text-center text-gray-500">No se encontraron vehículos con esos filtros.</td>
+      <td colspan="8" class="border px-4 py-2 text-center text-gray-500">No se encontraron vehículos con esos filtros.</td>
     </tr>
   </tbody>
 </table>

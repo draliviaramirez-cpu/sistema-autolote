@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VehiculosService, Vehiculo } from './vehiculos.service';
@@ -9,12 +9,18 @@ import { VehiculosService, Vehiculo } from './vehiculos.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './vehiculos.component.html',
 })
-export class VehiculosComponent implements OnInit {
+export class VehiculosComponent {
   vehiculos: Vehiculo[] = [];
   cargando = true;
   error = '';
 
-  nuevoVehiculo = { marca: '', modelo: '', anio: new Date().getFullYear(), precio: 0, imagen_url: '' };
+  nuevoVehiculo = {
+    marca: '',
+    modelo: '',
+    anio: undefined as number | undefined,
+    precio: undefined as number | undefined,
+    imagen_url: '',
+  };
 
   // Filtros
   filtroMarca = '';
@@ -22,11 +28,15 @@ export class VehiculosComponent implements OnInit {
   filtroPrecioMin: number | null = null;
   filtroPrecioMax: number | null = null;
   filtroSoloDisponibles = false;
+  monedaSeleccionada = 'EUR';
+  monedasDisponibles = ['EUR', 'HNL', 'GBP'];
+  conversiones: Record<number, number> = {};
 
-  constructor(private vehiculosService: VehiculosService) {}
-
-  ngOnInit(): void {
-    this.cargarVehiculos();
+  constructor(
+    private vehiculosService: VehiculosService,
+    private changeDetector: ChangeDetectorRef,
+  ) {
+    afterNextRender(() => this.cargarVehiculos());
   }
 
   cargarVehiculos() {
@@ -44,10 +54,15 @@ export class VehiculosComponent implements OnInit {
         next: (data) => {
           this.vehiculos = data;
           this.cargando = false;
+          this.changeDetector.detectChanges();
         },
-        error: () => {
+        error: (error) => {
           this.error = 'No se pudieron cargar los vehículos.';
           this.cargando = false;
+          if (error.error?.error) {
+            this.error = error.error.error;
+          }
+          this.changeDetector.detectChanges();
         },
       });
   }
@@ -63,12 +78,24 @@ export class VehiculosComponent implements OnInit {
 
   agregarVehiculo() {
     this.vehiculosService.addVehiculo(this.nuevoVehiculo).subscribe({
-      next: () => {
-        this.cargarVehiculos();
-        this.nuevoVehiculo = { marca: '', modelo: '', anio: new Date().getFullYear(), precio: 0, imagen_url: '' };
+      next: (respuesta) => {
+        this.vehiculos = [
+          { id: respuesta.id, disponible: true, ...this.nuevoVehiculo } as Vehiculo,
+          ...this.vehiculos,
+        ];
+        this.nuevoVehiculo = {
+          marca: '',
+          modelo: '',
+          anio: undefined,
+          precio: undefined,
+          imagen_url: '',
+        };
+        this.error = '';
+        this.changeDetector.detectChanges();
       },
-      error: () => {
-        this.error = 'No se pudo registrar el vehículo. ¿Iniciaste sesión?';
+      error: (error) => {
+        this.error = error.error?.error || 'No se pudo registrar el vehículo.';
+        this.changeDetector.detectChanges();
       },
     });
   }
@@ -86,6 +113,19 @@ export class VehiculosComponent implements OnInit {
       error: (err) => {
         this.error =
           err?.error?.error || 'No se pudo eliminar el vehículo.';
+      },
+    });
+  }
+
+  convertirPrecio(vehiculo: Vehiculo): void {
+    this.vehiculosService.convertirPrecio(Number(vehiculo.precio), this.monedaSeleccionada).subscribe({
+      next: (resultado) => {
+        this.conversiones[vehiculo.id] = resultado.montoConvertido;
+        this.changeDetector.detectChanges();
+      },
+      error: (error) => {
+        this.error = error.error?.error || 'No se pudo convertir el precio.';
+        this.changeDetector.detectChanges();
       },
     });
   }

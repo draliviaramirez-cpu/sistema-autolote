@@ -1,5 +1,29 @@
 <h2 class="text-2xl font-bold text-blue-600 mb-4">Listado de Ventas</h2>
 
+<form (ngSubmit)="agregarVenta()" class="space-y-3 bg-gray-100 p-4 rounded shadow mb-6">
+  <h3 class="font-semibold">Registrar venta</h3>
+  <label class="block">ID del vehículo
+    <span class="block text-sm text-gray-600">Consulta el ID en el módulo Vehículos.</span>
+    <input [(ngModel)]="nuevaVenta.vehiculo_id" name="vehiculo_id" type="number" min="1" class="border p-2 rounded w-full" required>
+  </label>
+  <label class="block">ID del cliente
+    <span class="block text-sm text-gray-600">Consulta el ID en el módulo Clientes.</span>
+    <input [(ngModel)]="nuevaVenta.cliente_id" name="cliente_id" type="number" min="1" class="border p-2 rounded w-full" required>
+  </label>
+  <label class="block">Precio total de la venta
+    <input [(ngModel)]="nuevaVenta.precio_total" name="precio_total" type="number" min="0.01" step="0.01" class="border p-2 rounded w-full" required>
+  </label>
+  <label class="block">Impuestos aplicados
+    <input [(ngModel)]="nuevaVenta.impuestos" name="impuestos" type="number" min="0" step="0.01" class="border p-2 rounded w-full">
+  </label>
+  <label class="block">Fecha de venta
+    <input [(ngModel)]="nuevaVenta.fecha_venta" name="fecha_venta" type="date" class="border p-2 rounded w-full" required>
+  </label>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Registrar venta</button>
+</form>
+
+<p *ngIf="mensaje" class="text-green-600 mb-3">{{ mensaje }}</p>
+
 <div class="flex items-center gap-3 mb-4">
   <label class="font-medium">Convertir precios a:</label>
   <select [(ngModel)]="monedaSeleccionada" class="border p-2 rounded">
@@ -20,16 +44,23 @@
       <th class="border px-4 py-2">Precio total</th>
       <th class="border px-4 py-2">Impuestos</th>
       <th class="border px-4 py-2">Convertido</th>
+      <th class="border px-4 py-2">Acciones</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let venta of ventas" class="hover:bg-gray-100">
-      <td class="border px-4 py-2">{{ venta.fecha_venta | date: 'dd/MM/yyyy' }}</td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.fecha_venta" name="fecha{{venta.id}}" type="date" class="border p-1 rounded">
+      </td>
       <td class="border px-4 py-2">{{ venta.marca }} {{ venta.modelo }} ({{ venta.anio }})</td>
       <td class="border px-4 py-2">{{ venta.cliente_nombre }} {{ venta.cliente_apellido }}</td>
       <td class="border px-4 py-2">{{ venta.vendedor_nombre }}</td>
-      <td class="border px-4 py-2">${{ venta.precio_total }}</td>
-      <td class="border px-4 py-2">${{ venta.impuestos }}</td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.precio_total" name="total{{venta.id}}" type="number" step="0.01" class="border p-1 rounded w-28">
+      </td>
+      <td class="border px-4 py-2">
+        <input [(ngModel)]="venta.impuestos" name="impuestos{{venta.id}}" type="number" step="0.01" class="border p-1 rounded w-24">
+      </td>
       <td class="border px-4 py-2">
         <button (click)="convertirPrecio(venta)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm">
           Ver en {{ monedaSeleccionada }}
@@ -38,16 +69,20 @@
           {{ c.monto | number: '1.2-2' }} {{ c.moneda }}
         </span>
       </td>
+      <td class="border px-4 py-2 space-x-2">
+        <button type="button" (click)="actualizarVenta(venta)" class="bg-green-600 text-white px-2 py-1 rounded">Actualizar</button>
+        <button type="button" (click)="eliminarVenta(venta.id)" class="bg-red-600 text-white px-2 py-1 rounded">Eliminar</button>
+      </td>
     </tr>
     <tr *ngIf="ventas.length === 0">
-      <td colspan="7" class="border px-4 py-2 text-center text-gray-500">No hay ventas registradas todavía.</td>
+      <td colspan="8" class="border px-4 py-2 text-center text-gray-500">No hay ventas registradas todavía.</td>
     </tr>
   </tbody>
   <tfoot *ngIf="ventas.length > 0">
     <tr class="bg-gray-100 font-semibold">
       <td colspan="4" class="border px-4 py-2 text-right">Total:</td>
       <td class="border px-4 py-2">${{ totalVentas | number: '1.2-2' }}</td>
-      <td class="border px-4 py-2" colspan="2"></td>
+      <td class="border px-4 py-2" colspan="3"></td>
     </tr>
   </tfoot>
 </table>

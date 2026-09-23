@@ -21,6 +21,12 @@ export interface FiltrosVehiculo {
   disponible?: boolean;
 }
 
+export interface ConversionVehiculo {
+  monedaOrigen: string;
+  monedaDestino: string;
+  montoConvertido: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -36,6 +42,12 @@ export class VehiculosService {
         Authorization: `Bearer ${token}`,
       }),
     };
+  }
+
+  convertirPrecio(monto: number, moneda: string): Observable<ConversionVehiculo> {
+    return this.http.get<ConversionVehiculo>(
+      `http://localhost:3000/api/tasas-cambio/convertir?monto=${monto}&moneda=${moneda}`,
+    );
   }
 
   // Público — no requiere token
