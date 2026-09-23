@@ -8,6 +8,7 @@ const vehiculoRoutes = require('./routes/vehiculo.routes');
 const ventaRoutes = require('./routes/venta.routes');
 const tasasRoutes = require('./routes/tasas.routes');
 const consultaRoutes = require('./routes/consulta.routes');
+const usuarioRoutes = require('./routes/usuario.routes');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/vehiculos', vehiculoRoutes);
 app.use('/api/ventas', ventaRoutes);
 app.use('/api/tasas-cambio', tasasRoutes);
 app.use('/api/consultas', consultaRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 // Manejo básico de rutas no encontradas
 app.use((req, res) => {

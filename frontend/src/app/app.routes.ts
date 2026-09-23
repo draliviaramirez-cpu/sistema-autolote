@@ -5,6 +5,7 @@ import { VehiculosComponent } from './vehiculos.component';
 import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './login.component';
 import { ConsultasComponent } from './consultas.component';
+import { UsuariosComponent } from './usuarios.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,4 +14,5 @@ export const routes: Routes = [
   { path: 'ventas', component: VentasComponent, canActivate: [AuthGuard] },
   { path: 'consultas', component: ConsultasComponent, canActivate: [AuthGuard] },
   { path: 'vehiculos', component: VehiculosComponent, canActivate: [AuthGuard] },
+  { path: 'usuarios', component: UsuariosComponent, canActivate: [AuthGuard] },
 ];

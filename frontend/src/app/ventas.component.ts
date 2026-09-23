@@ -17,8 +17,8 @@ export class VentasComponent {
   error = '';
 
   // Conversión de moneda
-  monedaSeleccionada = 'EUR';
-  monedasDisponibles = ['EUR', 'HNL', 'GBP'];
+  monedaSeleccionada = 'HNL';
+  monedasDisponibles = ['HNL', 'EUR', 'GBP', 'MXN'];
   // Guarda el resultado convertido por id de venta, para no perder los demás al convertir uno
   conversiones: Record<number, { moneda: string; monto: number }> = {};
   mensaje = '';

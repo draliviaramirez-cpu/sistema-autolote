@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   email = '';
   password = '';
@@ -34,6 +35,7 @@ export class LoginComponent {
       error: (error) => {
         this.error = error.error?.error || 'No se pudo iniciar sesión.';
         this.loading = false;
+        this.changeDetector.detectChanges();
       }
     });
   }

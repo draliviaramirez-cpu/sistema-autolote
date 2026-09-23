@@ -68,6 +68,8 @@
   <select [(ngModel)]="monedaSeleccionada" class="border p-2 rounded">
     <option *ngFor="let m of monedasDisponibles" [value]="m">{{ m }}</option>
   </select>
+
+  <span class="text-xs text-gray-500">Tasas: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" class="underline">Rates By Exchange Rate API</a></span>
 </div>
 
 <p *ngIf="cargando" class="text-gray-500">Cargando ventas...</p>

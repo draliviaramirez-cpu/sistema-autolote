@@ -46,9 +46,11 @@ export class ClientesComponent {
         ];
         this.nuevoCliente = { nombre: '', apellido: '', correo: '', telefono: '', direccion: '' };
         this.mensaje = 'Cliente agregado correctamente.';
+        this.changeDetector.detectChanges();
       },
       error: (error) => {
         this.mensaje = error.error?.error || 'No se pudo agregar el cliente.';
+        this.changeDetector.detectChanges();
       }
     });
   }
@@ -62,6 +64,7 @@ export class ClientesComponent {
       },
       error: (error) => {
         this.mensaje = error.error?.error || 'No se pudo actualizar el cliente.';
+        this.changeDetector.detectChanges();
       }
     });
   }
@@ -79,6 +82,7 @@ export class ClientesComponent {
       },
       error: (error) => {
         this.mensaje = error.error?.error || 'No se pudo eliminar el cliente.';
+        this.changeDetector.detectChanges();
       }
     });
   }

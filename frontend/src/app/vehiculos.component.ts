@@ -28,9 +28,11 @@ export class VehiculosComponent {
   filtroPrecioMin: number | null = null;
   filtroPrecioMax: number | null = null;
   filtroSoloDisponibles = false;
-  monedaSeleccionada = 'EUR';
-  monedasDisponibles = ['EUR', 'HNL', 'GBP'];
-  conversiones: Record<number, number> = {};
+  monedaSeleccionada = 'HNL';
+  monedasDisponibles = ['HNL', 'EUR', 'GBP', 'MXN'];
+  conversiones: Record<number, { moneda: string; monto: number }> = {};
+  // Vehículos cuya URL de foto no cargó (enlace roto o que no es una imagen)
+  imagenesRotas: Record<number, boolean> = {};
 
   constructor(
     private vehiculosService: VehiculosService,
@@ -103,7 +105,10 @@ export class VehiculosComponent {
   actualizarVehiculo(vehiculo: Vehiculo) {
     this.vehiculosService.updateVehiculo(vehiculo.id, vehiculo).subscribe({
       next: () => this.cargarVehiculos(),
-      error: () => (this.error = 'No se pudo actualizar el vehículo.'),
+      error: () => {
+        this.error = 'No se pudo actualizar el vehículo.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 
@@ -113,6 +118,7 @@ export class VehiculosComponent {
       error: (err) => {
         this.error =
           err?.error?.error || 'No se pudo eliminar el vehículo.';
+        this.changeDetector.detectChanges();
       },
     });
   }
@@ -120,10 +126,11 @@ export class VehiculosComponent {
   convertirPrecio(vehiculo: Vehiculo): void {
     this.vehiculosService.convertirPrecio(Number(vehiculo.precio), this.monedaSeleccionada).subscribe({
       next: (resultado) => {
-        this.conversiones[vehiculo.id] = resultado.montoConvertido;
+        this.conversiones[vehiculo.id] = { moneda: resultado.monedaDestino, monto: resultado.montoConvertido };
         this.changeDetector.detectChanges();
       },
       error: (error) => {
+        delete this.conversiones[vehiculo.id];
         this.error = error.error?.error || 'No se pudo convertir el precio.';
         this.changeDetector.detectChanges();
       },
