@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { obtenerTasas, convertir } = require('../services/exchangeRate.service');
 
-// GET /api/tasas-cambio?monedas=EUR,HNL,GBP
+// GET /api/tasas-cambio?monedas=HNL,EUR,GBP
 // Público — los clientes necesitan ver precios en su moneda sin estar logueados.
 router.get('/', async (req, res) => {
   const monedas = req.query.monedas
     ? req.query.monedas.split(',').map((m) => m.trim().toUpperCase())
-    : ['EUR', 'HNL'];
+    : ['HNL', 'EUR'];
 
   try {
     const resultado = await obtenerTasas(monedas);
