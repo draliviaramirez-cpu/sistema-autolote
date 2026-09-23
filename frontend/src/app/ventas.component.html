@@ -1,25 +1,64 @@
 <h2 class="text-2xl font-bold text-blue-600 mb-4">Listado de Ventas</h2>
 
-<form (ngSubmit)="agregarVenta()" class="space-y-3 bg-gray-100 p-4 rounded shadow mb-6">
-  <h3 class="font-semibold">Registrar venta</h3>
-  <label class="block">ID del vehículo
-    <span class="block text-sm text-gray-600">Consulta el ID en el módulo Vehículos.</span>
-    <input [(ngModel)]="nuevaVenta.vehiculo_id" name="vehiculo_id" type="number" min="1" class="border p-2 rounded w-full" required>
-  </label>
-  <label class="block">ID del cliente
-    <span class="block text-sm text-gray-600">Consulta el ID en el módulo Clientes.</span>
-    <input [(ngModel)]="nuevaVenta.cliente_id" name="cliente_id" type="number" min="1" class="border p-2 rounded w-full" required>
-  </label>
-  <label class="block">Precio total de la venta
-    <input [(ngModel)]="nuevaVenta.precio_total" name="precio_total" type="number" min="0.01" step="0.01" class="border p-2 rounded w-full" required>
-  </label>
-  <label class="block">Impuestos aplicados
-    <input [(ngModel)]="nuevaVenta.impuestos" name="impuestos" type="number" min="0" step="0.01" class="border p-2 rounded w-full">
-  </label>
-  <label class="block">Fecha de venta
-    <input [(ngModel)]="nuevaVenta.fecha_venta" name="fecha_venta" type="date" class="border p-2 rounded w-full" required>
-  </label>
-  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Registrar venta</button>
+<form (ngSubmit)="agregarVenta()" class="mb-8 overflow-hidden rounded-lg border border-gray-300 bg-white shadow">
+  <div class="border-b border-gray-200 bg-gray-800 px-6 py-5 text-white">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-300">Documento de venta</p>
+    <h3 class="mt-1 text-2xl font-bold">Registrar nueva venta</h3>
+    <p class="mt-1 text-sm text-gray-300">Completa los datos de la operación y revisa el total antes de confirmar.</p>
+  </div>
+
+  <div class="space-y-6 p-6">
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Datos de la operación</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="block">Fecha de venta
+          <input [(ngModel)]="nuevaVenta.fecha_venta" name="fecha_venta" type="date" class="mt-1 border p-2 rounded w-full" required>
+        </label>
+        <label class="block">ID del cliente comprador
+          <span class="block text-sm text-gray-600">Usa el ID mostrado en Clientes.</span>
+          <input [(ngModel)]="nuevaVenta.cliente_id" (ngModelChange)="actualizarClienteSeleccionado()" name="cliente_id" type="number" min="1" class="mt-1 border p-2 rounded w-full" required>
+          @if (clienteSeleccionado; as cliente) {
+            <span class="mt-1 block text-sm text-green-700">{{ cliente.nombre }} {{ cliente.apellido }} - {{ cliente.correo }}</span>
+          } @else if (nuevaVenta.cliente_id) {
+            <span class="mt-1 block text-sm text-red-600">No se encontró un cliente con ese ID.</span>
+          }
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Detalle del vehículo</h4>
+      <label class="block">ID del vehículo vendido
+        <span class="block text-sm text-gray-600">Usa el ID mostrado en Vehículos. Debe estar disponible.</span>
+        <input [(ngModel)]="nuevaVenta.vehiculo_id" (ngModelChange)="seleccionarVehiculo()" name="vehiculo_id" type="number" min="1" class="mt-1 border p-2 rounded w-full" required>
+        @if (vehiculoSeleccionado; as vehiculo) {
+          <span class="mt-1 block text-sm text-green-700">{{ vehiculo.marca }} {{ vehiculo.modelo }} ({{ vehiculo.anio }}) - ${{ vehiculo.precio }}</span>
+        }
+      </label>
+    </section>
+
+    <section>
+      <h4 class="mb-3 border-b border-gray-200 pb-2 font-semibold text-gray-700">Resumen de pago</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="block">Precio de venta
+          <input [(ngModel)]="nuevaVenta.precio_total" (ngModelChange)="calcularImpuestos()" name="precio_total" type="number" min="0.01" step="0.01" class="mt-1 border p-2 rounded w-full" required>
+          <span class="block text-sm text-gray-600">Se completa con el precio del vehículo.</span>
+        </label>
+        <label class="block">Porcentaje de impuesto
+          <input [(ngModel)]="nuevaVenta.impuesto_porcentaje" (ngModelChange)="calcularImpuestos()" name="impuesto_porcentaje" type="number" min="0" step="0.01" class="mt-1 border p-2 rounded w-full" required>
+          <span class="block text-sm text-gray-600">Ejemplo: 15 significa 15%.</span>
+        </label>
+        <label class="block">Impuesto calculado
+          <input [ngModel]="nuevaVenta.impuestos" name="impuestos" type="number" readonly class="mt-1 border p-2 rounded w-full bg-gray-100">
+        </label>
+        <label class="block font-semibold text-gray-800">Total a pagar
+          <input [value]="totalPagar | number: '1.2-2'" type="text" readonly class="mt-1 border p-2 rounded w-full bg-green-100 text-green-800">
+        </label>
+      </div>
+    </section>
+
+    <button type="submit" class="w-full rounded bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-800">Registrar venta</button>
+  </div>
 </form>
 
 <p *ngIf="mensaje" class="text-green-600 mb-3">{{ mensaje }}</p>

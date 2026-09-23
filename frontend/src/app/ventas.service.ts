@@ -51,8 +51,8 @@ export class VentasService {
   }
 
   addVenta(venta: {
-    vehiculo_id: number;
-    cliente_id: number;
+    vehiculo_id: number | undefined;
+    cliente_id: number | undefined;
     precio_total: number;
     impuestos: number;
     fecha_venta: string;
