@@ -50,6 +50,14 @@ Proyecto academico para Desarrollo de Aplicaciones Web I.
    & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < docs\schema.sql
    ```
 
+   `docs\schema.sql` es el unico esquema oficial del proyecto. Crea la base
+   `autolote_db` con las tablas `usuario`, `cliente`, `vehiculo`, `consulta` y
+   `venta`, que son las tablas utilizadas por el backend.
+
+   No se deben crear las tablas antiguas con nombres plurales (`Usuarios`,
+   `Clientes`, `Vehiculos`, `Consultas` y `Ventas`). Si ya existen en una base
+   local, respalda los datos y eliminalas antes de ejecutar el esquema oficial.
+
    Si la base ya existe y solo falta la tabla de ventas:
 
    ```powershell
